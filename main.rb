@@ -104,8 +104,12 @@ end
 post '/posts' do
 	auth
 	#debugger
-	post = Post.new :title => params[:title], :tags => params[:tags], :body => params[:body], :created_at => Time.now, :slug => Post.make_slug(params[:title]), :avatar => params[:avatar]
+	post = Post.new :title => params[:title], :tags => params[:tags], :body => params[:body], :created_at => Time.now, :slug => Post.make_slug(params[:title])
 	post.save
+	params[:image].each do |img|
+	  post.add_picture(:imagefile => img)
+  end
+	
 	redirect post.url
 end
 
@@ -124,8 +128,13 @@ post '/past/:year/:month/:day/:slug/' do
 	post.title = params[:title]
 	post.tags = params[:tags]
 	post.body = params[:body]
-	post.avatar = params[:avatar]
+	#post.avatar = params[:avatar]
 	post.save
+	post.remove_all_pictures #TODO better have delete button for each separate image
+	params[:image].each do |img|
+	  post.add_picture(:imagefile => img)
+  end
+	
 	redirect post.url
 end
 
