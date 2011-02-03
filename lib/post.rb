@@ -3,18 +3,39 @@ require File.dirname(__FILE__) + '/../vendor/maruku/maruku'
 $LOAD_PATH.unshift File.dirname(__FILE__) + '/../vendor/syntax'
 require 'syntax/convertors/html'
 
+class AvatarUploader < CarrierWave::Uploader::Base
+  def store_dir
+    'uploads'
+  end
+end
+
+
 class Post < Sequel::Model
-	unless table_exists?
-		set_schema do
-			primary_key :id
-			text :title
-			text :body
-			text :slug
-			text :tags
-			timestamp :created_at
-		end
-		create_table
-	end
+
+#	unless table_exists?(:posts)
+#		set_schema do
+#			primary_key :id
+#			text :title
+#			text :body
+#			text :slug
+#			text :tags
+#			text :avatar
+#			timestamp :created_at
+#		end
+#		create_table(:posts)
+#	end
+
+#  create_table(:posts) do
+#    primary_key :id
+#    text :title
+#		text :body
+#		text :slug
+#		text :tags
+#		text :avatar
+#		timestamp :created_at
+#  end #unless table_exists?(:posts)                      
+	
+	mount_uploader :avatar, AvatarUploader
 
 	def url
 		d = created_at
@@ -93,3 +114,5 @@ class Post < Sequel::Model
 		[ to_html(show.join("\n\n")), hide.size > 0 ]
 	end
 end
+
+

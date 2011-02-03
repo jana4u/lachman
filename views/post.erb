@@ -5,6 +5,7 @@
 	<div class="entry">
 		<%= post.body_html %>
 	</div>
+	<p><img src="<%= post.avatar.url %>" /></p>
 	<% if admin? %>
 		<div class="edit"><a href="<%= post.url %>edit">edit</a></div>
 	<% end %>

@@ -1,20 +1,23 @@
 require 'rubygems'
 require 'sinatra'
+require 'ruby-debug'
 
 $LOAD_PATH.unshift File.dirname(__FILE__) + '/vendor/sequel'
 require 'sequel'
+require 'carrierwave'
+require 'carrierwave/orm/sequel'
 
 configure do
 	Sequel.connect(ENV['DATABASE_URL'] || 'sqlite://blog.db')
 
 	require 'ostruct'
 	Blog = OpenStruct.new(
-		:title => 'a scanty blog',
-		:author => 'John Doe',
+		:title => 'CBIS news',
+		:author => 'CBIS',
 		:url_base => 'http://localhost:4567/',
-		:admin_password => 'changeme',
-		:admin_cookie_key => 'scanty_admin',
-		:admin_cookie_value => '51d6d976913ace58',
+		:admin_password => 'cbis2010',
+		:admin_cookie_key => 'cbis_admin',
+		:admin_cookie_value => '913ace5851d6d976',
 		:disqus_shortname => nil
 	)
 end
@@ -35,7 +38,7 @@ helpers do
 	end
 
 	def auth
-		stop [ 401, 'Not authorized' ] unless admin?
+		halt [ 401, 'Not authorized' ] unless admin?
 	end
 end
 
@@ -50,7 +53,7 @@ end
 
 get '/past/:year/:month/:day/:slug/' do
 	post = Post.filter(:slug => params[:slug]).first
-	stop [ 404, "Page not found" ] unless post
+	halt [ 404, "Page not found" ] unless post
 	@title = post.title
 	erb :post, :locals => { :post => post }
 end
@@ -89,7 +92,7 @@ get '/auth' do
 end
 
 post '/auth' do
-	set_cookie(Blog.admin_cookie_key, Blog.admin_cookie_value) if params[:password] == Blog.admin_password
+	response.set_cookie(Blog.admin_cookie_key, Blog.admin_cookie_value) if params[:password] == Blog.admin_password
 	redirect '/'
 end
 
@@ -100,7 +103,8 @@ end
 
 post '/posts' do
 	auth
-	post = Post.new :title => params[:title], :tags => params[:tags], :body => params[:body], :created_at => Time.now, :slug => Post.make_slug(params[:title])
+	#debugger
+	post = Post.new :title => params[:title], :tags => params[:tags], :body => params[:body], :created_at => Time.now, :slug => Post.make_slug(params[:title]), :avatar => params[:avatar]
 	post.save
 	redirect post.url
 end
@@ -108,17 +112,19 @@ end
 get '/past/:year/:month/:day/:slug/edit' do
 	auth
 	post = Post.filter(:slug => params[:slug]).first
-	stop [ 404, "Page not found" ] unless post
+	halt [ 404, "Page not found" ] unless post
 	erb :edit, :locals => { :post => post, :url => post.url }
 end
 
 post '/past/:year/:month/:day/:slug/' do
 	auth
+	#debugger
 	post = Post.filter(:slug => params[:slug]).first
-	stop [ 404, "Page not found" ] unless post
+	halt [ 404, "Page not found" ] unless post
 	post.title = params[:title]
 	post.tags = params[:tags]
 	post.body = params[:body]
+	post.avatar = params[:avatar]
 	post.save
 	redirect post.url
 end
