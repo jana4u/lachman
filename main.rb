@@ -53,6 +53,7 @@ end
 
 get '/past/:year/:month/:day/:slug/' do
 	post = Post.filter(:slug => params[:slug]).first
+	#pics = Picture.filter(:post_id => post.id).order(:order)
 	halt [ 404, "Page not found" ] unless post
 	@title = post.title
 	erb :post, :locals => { :post => post }
@@ -130,11 +131,26 @@ post '/past/:year/:month/:day/:slug/' do
 	post.body = params[:body]
 	#post.avatar = params[:avatar]
 	post.save
-	post.remove_all_pictures #TODO better have delete button for each separate image
-	params[:image].each do |img|
-	  post.add_picture(:imagefile => img)
-  end
+	#post.remove_all_pictures #TODO better have delete button for each separate image
+	params[:image].each_with_index do |img,index|
+	  post.add_picture(:imagefile => img, :order => post.pictures.last.order+index+1)
+  end unless params[:image].nil?
 	
 	redirect post.url
+end
+
+post '/reorder' do
+  #debugger
+  params[:pic].each_with_index do |pic_id,index|
+    pic = Picture[:id => pic_id.to_i]
+    #puts pic
+    pic.set(:order => index)
+    pic.save
+  end
+end
+
+delete '/pictures/:id' do
+  Picture[params[:id]].destroy
+  redirect back
 end
 

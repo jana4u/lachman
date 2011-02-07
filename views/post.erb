@@ -7,8 +7,8 @@
 	</div>
 	
 	<div id="sortable">
-		<% post.pictures.each do |pic| %>
-			<p><img src="<%= pic.imagefile %>" /></p>
+		<% post.pictures.each_with_index do |pic,index| %>
+			<p id="pic_<%= index %>"><img src="<%= pic.imagefile %>" /></p>
 		<% end %>
 	</div><!-- #sortable -->
 	
@@ -21,8 +21,4 @@
 	<div id="disqus_thread"></div><script type="text/javascript" src="http://disqus.com/forums/<%= Blog.disqus_shortname %>/embed.js"></script><noscript><a href="http://<%= Blog.disqus_shortname %>.disqus.com/?url=ref">View the discussion thread.</a></noscript><a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
 <% end %>
 
-<!-- <script type="text/javascript" charset="utf-8">
-	$(document).ready(function() {
-		$("#sortable").sortable();
-	});
-</script> -->     
+     

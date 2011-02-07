@@ -6,7 +6,36 @@
 	<div class="entry">
 		<textarea name="body"><%= post.body %></textarea>
 	</div>
+	
+	<div id="sortable">
+		<% post.pictures.each_with_index do |pic,index| %>
+			<p id="pic_<%= pic.id %>">
+				<img src="<%= pic.imagefile %>" />
+				<a href="/pictures/<%= pic.id %>" data-method="delete" rel="nofollow" data-confirm="Are you sure?">Delete</a>
+			</p>
+		<% end %>
+	</div><!-- #sortable -->
+	
 	<input type="file" name="image[]" multiple/>
 	<div class="edit"><input type="submit" value="Save" /></div>
 </div>
 </form>
+
+<script type="text/javascript" charset="utf-8">
+	$(document).ready(function() {
+		$("#sortable").sortable({
+			stop: function(event,ui){
+				console.log($("#sortable").sortable("serialize"));
+				$.ajax({
+				  url: "/reorder",
+					type: "POST",
+					data: $("#sortable").sortable("serialize"),
+				  success: function(){
+				    //$(this).addClass("done");
+				  }
+				});
+			}
+		});
+		
+	});
+</script>

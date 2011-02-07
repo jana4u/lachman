@@ -17,6 +17,7 @@ class Picture < Sequel::Model
     primary_key :id
     foreign_key :post_id, :posts
 		text :imagefile
+		integer :order, :default => 0
 		timestamp :created_at
   end unless table_exists?
   
@@ -27,7 +28,7 @@ end
 
 class Post < Sequel::Model
   plugin :schema
-  one_to_many :pictures
+  one_to_many :pictures, :order => :order
 
   create_table(:posts) do
     primary_key :id
