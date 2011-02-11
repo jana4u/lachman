@@ -8,14 +8,14 @@ require 'carrierwave'
 require 'carrierwave/orm/sequel'
 
 configure do
-	Sequel.connect(ENV['DATABASE_URL'] || 'sqlite://blog.db')
+	Sequel.connect(ENV['DATABASE_URL'] || 'sqlite://lachman.db')
 
 	require 'ostruct'
 	Blog = OpenStruct.new(
-		:title => 'CBIS news',
-		:author => 'CBIS',
+		:title => 'Lachman news',
+		:author => 'Lachman',
 		:url_base => 'http://localhost:4567/',
-		:admin_password => 'cbis2010',
+		:admin_password => 'lachman2011',
 		:admin_cookie_key => 'cbis_admin',
 		:admin_cookie_value => '913ace5851d6d976',
 		:disqus_shortname => nil
@@ -30,7 +30,7 @@ error do
 end
 
 $LOAD_PATH.unshift(File.dirname(__FILE__) + '/lib')
-require 'post'
+require 'model'
 
 helpers do
 	def admin?
@@ -40,13 +40,24 @@ helpers do
 	def auth
 		halt [ 401, 'Not authorized' ] unless admin?
 	end
+	
+  def linebreaks(text)
+    text.gsub(/[*_]/,'&nbsp;').gsub(/\s/,'<br/>')
+  end
+	
 end
+
+
 
 layout 'layout'
 
 ### Public
 
 get '/' do
+  erb :home, :layout => false
+end
+
+get '/posts' do
 	posts = Post.reverse_order(:created_at).limit(10)
 	erb :index, :locals => { :posts => posts }, :layout => false
 end
@@ -105,11 +116,12 @@ end
 post '/posts' do
 	auth
 	#debugger
-	post = Post.new :title => params[:title], :tags => params[:tags], :body => params[:body], :created_at => Time.now, :slug => Post.make_slug(params[:title])
+	#post = Post.new :title => params[:title], :tags => params[:tags], :body => params[:body], :created_at => Time.now, :slug => Post.make_slug(params[:title])
+	post = Post.new :title => params[:title], :location => params[:location], :body => params[:body], :created_at => Time.now, :slug => Post.make_slug(params[:title])
 	post.save
 	params[:image].each do |img|
-	  post.add_picture(:imagefile => img)
-  end
+	  post.add_picture(:filename => img)
+  end unless params[:image].nil?
 	
 	redirect post.url
 end
@@ -133,7 +145,7 @@ post '/past/:year/:month/:day/:slug/' do
 	post.save
 	#post.remove_all_pictures #TODO better have delete button for each separate image
 	params[:image].each_with_index do |img,index|
-	  post.add_picture(:imagefile => img, :order => post.pictures.last.order+index+1)
+	  post.add_picture(:filename => img, :order => post.pictures.last.order+index+1)
   end unless params[:image].nil?
 	
 	redirect post.url
@@ -154,3 +166,43 @@ delete '/pictures/:id' do
   redirect back
 end
 
+# LACHMAN:
+
+get '/reference' do
+	posts = Post.reverse_order(:created_at).limit(10)
+	erb :credentials_list, :locals => { :posts => posts }, :layout => false
+end
+
+get '/reference/:slug/' do
+	post = Post.filter(:slug => params[:slug]).first
+	halt [ 404, "Page not found" ] unless post
+	@title = post.title
+	erb :credential, :locals => { :post => post }, :layout => false
+end
+
+get '/reference/:slug' do
+	redirect "/reference/#{params[:slug]}/", 301 # take care of the trailing slash
+end
+
+get '/reference/:slug/edit' do
+	auth
+	post = Post.filter(:slug => params[:slug]).first
+	halt [ 404, "Page not found" ] unless post
+	erb :edit, :locals => { :post => post, :url => post.url }
+end
+
+post '/reference/:slug/' do
+	auth
+	#debugger
+	post = Post.filter(:slug => params[:slug]).first
+	halt [ 404, "Page not found" ] unless post
+	post.title = params[:title]
+	post.location = params[:location]
+	post.body = params[:body]
+	post.save
+	params[:image].each_with_index do |img,index|
+	  post.add_picture(:filename => img, :order => post.pictures.last ? post.pictures.last.order+index+1 : index)
+  end unless params[:image].nil?
+	
+	redirect post.url
+end

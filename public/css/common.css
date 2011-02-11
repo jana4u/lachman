@@ -1,0 +1,39 @@
+/* === LAYOUT === */
+
+body {
+	background:url('../images/bgpattern.png');
+	/*font-family: 'Futura T CE', Helvetica, Arial, sans-serif;*/
+	font-family: "Futura W02 Light", Helvetica, Arial, sans-serif;
+	font-size:13px;
+	color:#5D6567;
+	line-height:130%;
+}
+
+#wrapper {
+	width: 1200px;
+	margin:0 auto;
+	padding:0;
+	background:white;
+}
+
+#container {
+	width:940px;
+	margin:0 130px 80px;
+	position:relative;
+	overflow-x:hidden;
+	height:1200px; /* TODO do it in a different way */
+}
+
+/* === STYLE === */
+
+.title {
+	text-transform:uppercase;
+	font-size:11px;
+	font-family: "Futura W02 Medium", Helvetica, Arial, sans-serif;
+	xfont-weight:500;
+	color:#FF2825;
+	letter-spacing:0.4em;
+	display:block;
+	clear:both;
+	margin-bottom:2em;
+}

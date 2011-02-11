@@ -8,7 +8,7 @@
 	
 	<div id="sortable">
 		<% post.pictures.each_with_index do |pic,index| %>
-			<p id="pic_<%= index %>"><img src="<%= pic.imagefile %>" /></p>
+			<p id="pic_<%= index %>"><img src="<%= pic.filename %>" /></p>
 		<% end %>
 	</div><!-- #sortable -->
 	

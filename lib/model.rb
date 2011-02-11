@@ -2,6 +2,8 @@ require File.dirname(__FILE__) + '/../vendor/maruku/maruku'
 
 $LOAD_PATH.unshift File.dirname(__FILE__) + '/../vendor/syntax'
 require 'syntax/convertors/html'
+require 'active_support/inflector'
+
 
 class ImageUploader < CarrierWave::Uploader::Base
   def store_dir
@@ -16,34 +18,37 @@ class Picture < Sequel::Model
   create_table(:pictures) do
     primary_key :id
     foreign_key :post_id, :posts
-		text :imagefile
+		text :filename
 		integer :order, :default => 0
 		timestamp :created_at
   end unless table_exists?
   
-  mount_uploader :imagefile, ImageUploader
+  mount_uploader :filename, ImageUploader
   
 end
 
 
 class Post < Sequel::Model
   plugin :schema
+  #plugin :sluggable, :source => :title
   one_to_many :pictures, :order => :order
 
   create_table(:posts) do
     primary_key :id
     text :title
+    text :location
 		text :body
 		text :slug
-		text :tags
+		#text :tags
 		#text :avatar
 		timestamp :created_at
   end unless table_exists?                      
 	
 
 	def url
-		d = created_at
-		"/past/#{d.year}/#{d.month}/#{d.day}/#{slug}/"
+		# d = created_at
+		# "/past/#{d.year}/#{d.month}/#{d.day}/#{slug}/"
+		"/reference/#{slug}/"
 	end
 
 	def full_url
@@ -75,7 +80,9 @@ class Post < Sequel::Model
 	end
 
 	def self.make_slug(title)
-		title.downcase.gsub(/ /, '_').gsub(/[^a-z0-9_]/, '').squeeze('_')
+		#title.downcase.gsub(/ /, '_').gsub(/[^a-z0-9_]/, '').squeeze('_')
+		ActiveSupport::Inflector.parameterize(title) # requires activesupport
+		#slug
 	end
 
 	########

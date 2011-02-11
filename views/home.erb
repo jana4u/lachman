@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		<link rel="stylesheet" href="css/reset.css" type="text/css" media="screen" title="no title" charset="utf-8">
+		<link rel="stylesheet" href="css/common.css" type="text/css" media="screen" title="no title" charset="utf-8">
+		<link rel="stylesheet" href="css/homepage.css" type="text/css" media="screen" title="no title" charset="utf-8">
+		
+		<script type="text/javascript" src="http://fast.fonts.com/jsapi/eae1e4d2-2f77-41fd-a77b-a774ca843d87.js"></script>
+		
+		<!--[if lt IE 9]>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/jquery-ui.min.js"></script>
+		
+		<script type="text/javascript" charset="utf-8">
+		
+			$(document).ready(function() {
+				
+				$("#righttop, #rightbottom").bind('mouseover', function(){
+					if ($("#lefttop").css('left') != '-320px') {
+						$("#lefttop").stop().animate({left: -320},1000);
+						//$("#leftbottom").stop().animate({left: -320},1000);
+						$("#righttop").stop().animate({left: 310},1000);
+						$("#rightbottom").stop().animate({left: 300},1000);
+					}
+					
+					//darken($(".interier_darken"));
+					darken($(".darken_wrapper"));
+					//darken($(".styl_darken")); // actually the opposite for Styl - color photos have _bw suffix
+					
+				});
+
+				$("#lefttop, #leftbottom").bind('mouseover', function(){
+					if ($("#lefttop").css('left') != '0px') {
+						$("#lefttop").stop().animate({left: 0},1000);
+						//$("#leftbottom").stop().animate({left: 0},1000);
+						$("#righttop").stop().animate({left: 630},1000);
+						$("#rightbottom").stop().animate({left: 620},1000);
+					}
+					
+					//undarken($(".interier_darken"));
+					undarken($(".darken_wrapper"));
+					//undarken($(".styl_darken"));
+					
+				});
+				
+				$("#interier_main").bind('click',function(){
+					console.log("clicked");
+					change();
+				})
+        
+
+				function darken(target) {
+					target.each(function(i,e){
+						if ($(e).find(".alternate").length == 0) {
+							var newsrc = $(e).find('img').attr("src").split(".")[0]+"_bw."+$(e).find('img').attr("src").split(".")[1];
+							$(e).find('img').after('<img src="'+newsrc+'" class="alternate" style="position:absolute;left:0;top:0;z-index:5;" />');
+						} else {
+							//console.log("already appended");
+						}
+					});
+					
+					target.find('img').not('.alternate').fadeOut(1000);
+				}
+				
+				function undarken(target) {
+					target.find('img').not('.alternate').fadeIn(1000);
+				}
+				
+			});
+			
+			function change() {
+				if ($("#lefttop").css('left') == '0px') {
+					$("#interier_main").find('.alternate').remove();
+					var newindex = parseInt($("#interier_main").find('img').attr("src").match(/\d/)[0]) + 1;
+					if (newindex == 3) { var newindex = 1; }
+					var newsrc = 'images/mainimage_'+newindex+'.jpg'
+					$("#interier_main").find('img').addClass('previous').after('<img src="'+newsrc+'" class="next" style="position:absolute;left:0;top:0;z-index:9;" />');                                                                                                                                          
+					$(".previous").fadeOut(1000,function(){
+						$(".previous").remove();
+						$(".next").css('z-index','10');
+					});
+				}
+			}
+			
+			setInterval("change()",5000);
+			
+		</script>
+		
+	</head>
+	
+	<body>
+			
+		<div id="wrapper">
+			
+			<div id="container">
+				
+				<div id="lefttop">
+					
+					<div id="header_interier">
+						<span class="title">lachman interier design</span>
+						výroba<br/>zakázkového nábytku<br/>a interiérů
+					</div><!-- #header_interier -->
+					
+					<img src="images/logo_lachman.png" width="125" height="13" alt="Logo Lachman">
+					
+					<div id="menu_interier">
+						<a href="reference.html">reference</a> /
+						<a href="#">prodejna nábytku</a> /
+						<a href="#">profil společnosti</a> /
+						<a href="/kontakty.html">kontakty</a>
+					</div><!-- #menu_interier -->                                                      
+					
+					<div id="interier_main" class="darken_wrapper">
+						<img class="interier_darken original" src="images/mainimage_1.jpg" width="620" height="340" alt="Mainimage Temp">
+						<div class="labelbar">
+							Bohemian National Hall, New York
+						</div><!-- .labelbar -->
+					</div><!-- .darken_wrapper -->
+					
+				</div><!-- #lefttop -->
+				
+				<div id="righttop">
+					
+					<div id="header_styl">
+						<span class="title">lachman styl</span>
+						stavební<br/>realizace<br/>budov a interiérů
+					</div><!-- #header_styl -->
+					
+					<img src="images/logo_lachman.png" width="125" height="13" alt="Logo Lachman">
+					
+					<div id="menu_styl">
+						<a href="reference.html">reference</a> /
+						<a href="#">profil společnosti</a> /
+						<a href="#">kontakty</a>
+					</div><!-- #menu_styl -->                                                      
+					
+					<div class="darken_wrapper styl_top"><img class="styl_darken" src="images/mainimage_temp_styl.png" width="620" height="340" alt="Mainimage Temp"></div>
+					
+				</div><!-- #righttop -->
+				
+				<div id="leftbottom">
+					<div id="ref_wrapper">
+						
+						<a class="ref_link" href="#">
+							<div class="reference">
+								<div class="darken_wrapper">
+									<img class="interier_darken" src="images/ref_hotely.jpg" width="430" height="105" alt="Hotely a restaurace">
+								</div><!-- .darken_wrapper -->
+								<div id="ref_label"><span class="title">reference</span></div>
+								<div class="ref_title">
+									hotely<br/>a restaurace
+								</div><!-- .ref_title -->
+							</div><!-- .reference -->
+						</a><!-- .ref_link -->
+					
+						<a class="ref_link" href="#">
+							<div class="reference">
+								<div class="darken_wrapper">
+									<img class="interier_darken" src="images/ref_verejnebudovy.jpg" width="430" height="105" alt="Veřejné budovy">
+								</div><!-- .darken_wrapper -->
+								<div class="ref_title">
+									veřejné budovy
+								</div><!-- .ref_title -->
+							</div><!-- .reference -->
+						</a><!-- .ref_link -->
+						
+						<a class="ref_link" href="#">
+							<div class="reference">
+								<div class="darken_wrapper">
+									<img class="interier_darken" src="images/ref_banky.jpg" width="430" height="105" alt="Ref Temp">
+								</div><!-- .darken_wrapper -->
+								<div class="ref_title">
+									banky
+								</div><!-- .ref_title -->
+							</div><!-- .reference -->
+						</a><!-- .ref_link -->
+						
+						<a class="ref_link" href="#">
+							<div class="reference">
+								<div class="darken_wrapper">
+									<img class="interier_darken" src="images/ref_kancelare.jpg" width="430" height="105" alt="Ref Temp">
+								</div><!-- .darken_wrapper -->
+								<div class="ref_title">
+									kanceláře<br/>a obchodní prostory
+								</div><!-- .ref_title -->
+							</div><!-- .reference -->
+						</a><!-- .ref_link -->
+						
+						<a class="ref_link" href="#">
+							<div class="reference">
+								<div class="darken_wrapper">
+									<img class="interier_darken" src="images/ref_byty.jpg" width="430" height="105" alt="Rodinné domy a byty">
+								</div><!-- .darken_wrapper -->
+								<div class="ref_title">
+									rodinné domy<br/>a byty
+								</div><!-- .ref_title -->
+							</div><!-- .reference -->
+						</a><!-- .ref_link -->     
+						 
+					</div><!-- #ref_wrapper -->  
+					
+				</div><!-- #leftbottom -->
+				
+				<div id="rightbottom">
+					
+					<div id="spacercol1">
+						&nbsp;
+					</div><!-- #spacercol1 -->
+					
+					<div id="rb_col1">
+						<span class="title">reference</span>
+						<div class="darken_wrapper darken_wrapper_styl_ref1"><img class="styl_darken styl_ref1" src="images/ref_small_temp.png" width="300" height="168" alt="Ref Small Temp"></div>
+						<div class="darken_wrapper darken_wrapper_styl_ref2"><img class="styl_darken styl_ref2" src="images/ref_small_temp.png" width="300" height="168" alt="Ref Small Temp"></div>
+						<ul>
+							<li>Gymnázium a ZŠ NOVÝ PORG, Praha</li>
+							<li>Řízení Letového Provozu - letiště Praha Ruzyně</li>
+							<li>Fortuna a.s. -  kanceláře sídla společnosti, Praha</li>
+							<li>Restaurace My Life, Praha</li>
+							<li>Rekonstrukce společných prostor bytového domu, U&nbsp;Lužického semináře, Praha 1</li>
+							<li>GANT - vybudování obchodní jednotky, Banská Bystrica</li>
+						</ul>
+					</div><!-- #rb_col1 -->
+					
+					<div id="rb_col2">
+						<span class="title">&nbsp;</span>
+						<img class="styl_ref1" src="images/ref_small_temp_bw.png" width="300" height="168" alt="Ref Small Temp">
+						<img class="styl_ref2" src="images/ref_small_temp_bw.png" width="300" height="168" alt="Ref Small Temp">
+						<ul>
+							<li>Gymnázium a ZŠ NOVÝ PORG, Praha</li>
+							<li>Řízení Letového Provozu - letiště Praha Ruzyně</li>
+							<li>Fortuna a.s. -  kanceláře sídla společnosti, Praha</li>
+							<li>Restaurace My Life, Praha</li>
+							<li>Rekonstrukce společných prostor bytového domu, U&nbsp;Lužického semináře, Praha 1</li>
+							<li>GANT - vybudování obchodní jednotky, Banská Bystrica</li>
+						</ul>
+					</div><!-- #rb_col2 -->
+					
+				</div><!-- #rightbottom -->
+				
+			</div><!-- #container -->
+			
+		</div><!-- #wrapper -->
+		
+	</body>
+</html>
