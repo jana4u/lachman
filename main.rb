@@ -42,7 +42,7 @@ helpers do
 	end
 	
   def linebreaks(text)
-    text.gsub(/[*_]/,'&nbsp;').gsub(/\s/,'<br/>')
+    text.gsub(/[*+]/,'&nbsp;').gsub(/\s/,'<br/>')
   end
 	
 end
@@ -173,6 +173,22 @@ get '/reference' do
 	erb :credentials_list, :locals => { :posts => posts }, :layout => false
 end
 
+get '/reference/new' do
+	auth
+	erb :edit, :locals => { :post => Post.new, :url => '/reference' }
+end
+
+post '/reference' do # create new reference
+	auth
+	post = Post.new :title => params[:title], :location => params[:location], :body => params[:body], :created_at => Time.now, :slug => Post.make_slug(params[:title])
+	post.save
+	params[:image].each_with_index do |img,index|
+	  post.add_picture(:filename => img, :order => index)
+  end unless params[:image].nil?
+	
+	redirect post.url
+end
+
 get '/reference/:slug/' do
 	post = Post.filter(:slug => params[:slug]).first
 	halt [ 404, "Page not found" ] unless post
@@ -206,3 +222,10 @@ post '/reference/:slug/' do
 	
 	redirect post.url
 end
+
+delete '/reference/:id' do
+  Post[params[:id]].destroy
+  redirect '/reference'
+end
+
+

@@ -30,8 +30,8 @@ end
 
 class Post < Sequel::Model
   plugin :schema
-  #plugin :sluggable, :source => :title
   one_to_many :pictures, :order => :order
+  plugin :association_dependencies, :pictures=>:destroy
 
   create_table(:posts) do
     primary_key :id
