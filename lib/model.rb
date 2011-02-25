@@ -39,6 +39,7 @@ class Post < Sequel::Model
     text :location
 		text :body
 		text :slug
+		text :category
 		#text :tags
 		#text :avatar
 		timestamp :created_at
@@ -48,7 +49,7 @@ class Post < Sequel::Model
 	def url
 		# d = created_at
 		# "/past/#{d.year}/#{d.month}/#{d.day}/#{slug}/"
-		"/reference/#{slug}/"
+		"/reference/#{category}/#{slug}/"
 	end
 
 	def full_url

@@ -2,6 +2,15 @@
 <div class="postzoom">
 	<h2 class="title"><input type="text" name="title" value="<%= post.title %>" /></h2>
 	<p class="meta"><input type="text" name="location" value="<%= post.location %>" /></p>
+	<p>
+		<select name="cat">
+		  <option value="banky">Banky</option>
+		  <option value="verejne-budovy">Veřejné budovy</option>
+		  <option value="kancelare-a-obchodni-prostory">Kanceláře a obchodní prostory</option>
+		  <option value="hotely-a-restaurace">Hotely a restaurace</option>
+		  <option value="rodinne-domy-a-byty">Rodinné domy a byty</option>
+		</select>
+	</p>
 	<p class="meta"><%= post.created_at %></p>
 	<div class="entry">
 		<textarea name="body"><%= post.body %></textarea>

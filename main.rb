@@ -167,20 +167,35 @@ delete '/pictures/:id' do
 end
 
 # LACHMAN:
-
-get '/reference' do
-	posts = Post.reverse_order(:created_at).limit(10)
-	erb :credentials_list, :locals => { :posts => posts }, :layout => false
-end
-
 get '/reference/new' do
 	auth
 	erb :edit, :locals => { :post => Post.new, :url => '/reference' }
 end
 
+get '/reference' do
+  redirect "/reference/vsechny", 301
+end
+
+get '/reference/:category' do
+  case params[:category]
+  when 'vsechny'
+	  posts = Post.reverse_order(:created_at).limit(10)
+	when 'banky', 'verejne-budovy', 'kancelare-a-obchodni-prostory', 'hotely-a-restaurace', 'rodinne-domy-a-byty'
+	  posts = Post.filter(:category => params[:category]).reverse_order(:created_at).limit(10)
+  else
+    halt [404,"No such category"]
+  end
+  erb :credentials_list, :locals => { :posts => posts }, :layout => false
+end
+
 post '/reference' do # create new reference
 	auth
-	post = Post.new :title => params[:title], :location => params[:location], :body => params[:body], :created_at => Time.now, :slug => Post.make_slug(params[:title])
+	post = Post.new :title => params[:title], 
+	                :location => params[:location], 
+	                :body => params[:body], 
+	                :created_at => Time.now, 
+	                :slug => Post.make_slug(params[:title]),
+	                :category => params[:cat] 
 	post.save
 	params[:image].each_with_index do |img,index|
 	  post.add_picture(:filename => img, :order => index)
@@ -189,25 +204,30 @@ post '/reference' do # create new reference
 	redirect post.url
 end
 
-get '/reference/:slug/' do
-	post = Post.filter(:slug => params[:slug]).first
-	halt [ 404, "Page not found" ] unless post
-	@title = post.title
-	erb :credential, :locals => { :post => post }, :layout => false
+get '/reference/:category/:slug/' do
+  case params[:category]
+  when 'vsechny', 'banky', 'verejne-budovy', 'kancelare-a-obchodni-prostory', 'hotely-a-restaurace', 'rodinne-domy-a-byty'
+    post = Post.filter(:slug => params[:slug]).first
+  	halt [ 404, "Page not found" ] unless post
+  	@title = post.title
+  	erb :credential, :locals => { :post => post }, :layout => false
+	else
+	  halt [ 404, "No such category" ]
+	end
 end
 
-get '/reference/:slug' do
+get '/reference/:category/:slug' do
 	redirect "/reference/#{params[:slug]}/", 301 # take care of the trailing slash
 end
 
-get '/reference/:slug/edit' do
+get '/reference/:category/:slug/edit' do
 	auth
 	post = Post.filter(:slug => params[:slug]).first
 	halt [ 404, "Page not found" ] unless post
 	erb :edit, :locals => { :post => post, :url => post.url }
 end
 
-post '/reference/:slug/' do
+post '/reference/:category/:slug/' do
 	auth
 	#debugger
 	post = Post.filter(:slug => params[:slug]).first
@@ -215,6 +235,7 @@ post '/reference/:slug/' do
 	post.title = params[:title]
 	post.location = params[:location]
 	post.body = params[:body]
+	post.category = params[:cat]
 	post.save
 	params[:image].each_with_index do |img,index|
 	  post.add_picture(:filename => img, :order => post.pictures.last ? post.pictures.last.order+index+1 : index)
