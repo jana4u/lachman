@@ -37,3 +37,7 @@ body {
 	clear:both;
 	margin-bottom:2em;
 }
+
+.admin {
+	color:green;
+}

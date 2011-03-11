@@ -3,9 +3,14 @@ require File.dirname(__FILE__) + '/../vendor/maruku/maruku'
 $LOAD_PATH.unshift File.dirname(__FILE__) + '/../vendor/syntax'
 require 'syntax/convertors/html'
 require 'active_support/inflector'
+#require 'image_science'
 
 
 class ImageUploader < CarrierWave::Uploader::Base
+  include CarrierWave::RMagick
+
+  process :resize_to_fit => [620, 620]
+
   def store_dir
     'uploads'
   end
@@ -40,6 +45,7 @@ class Post < Sequel::Model
 		text :body
 		text :slug
 		text :category
+		text :company
 		#text :tags
 		#text :avatar
 		timestamp :created_at
@@ -49,7 +55,7 @@ class Post < Sequel::Model
 	def url
 		# d = created_at
 		# "/past/#{d.year}/#{d.month}/#{d.day}/#{slug}/"
-		"/reference/#{category}/#{slug}/"
+		"/#{company}/reference/#{category}/#{slug}/"
 	end
 
 	def full_url

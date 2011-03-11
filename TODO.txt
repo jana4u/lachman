@@ -1,0 +1,19 @@
+stručný popis aplikace:
+
+- je to web pro dvě samostatné firmy - Lachman Interier a Lachman Styl
+- jediná dynamická část je přidávání referencí - jednoduchý from s multifile inputem
+- zobrazení referencí se filtruje podle firmy (styl,interier) a podle kategorií (banky, verejne-budovy, atd.)
+- u firmy styl nebude třídění podle kategorií (nepotřebují ho)
+- autorizace probíhá na stránce '/auth' zadáním hesla, které je uvedeno v main.rb jako :admin_password
+- autorizovanému uživateli se následně zobrazí admin funkce jako "přidat referenci" apod.
+- ORM je Sequel, jsou tam jen dva modely Post a Picture
+
+
+todo:
+
+- dodělat pagination referencí
+- dodělat zobrazení referencí pro Lachman Styl (bez kategorií)
+- oživení všech linků v menu. linky 'o firmě', 'kontakt', 'prodejna' povedou na statickou stránku, na které bude zatím placeholder ve stylu "zde doplnit text pro sekci kontakty", apod.
+- na homepage někam do footeru přidat link na '/auth'
+- otestovat (ručně) že všechno funguje. pokud by šly napsat i nějaké jednoduché testy na základní věci, tak dle dohody…
+- nasazení na railshosting (zaplatím lite hosting)

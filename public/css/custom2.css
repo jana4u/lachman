@@ -2,6 +2,7 @@
 
 #container {
 	height:inherit;
+	min-height:600px;
 }
 
 #header {
@@ -128,4 +129,20 @@ hr.clearer {
 
 #leftcol a {
 	color:inherit;
+}
+
+/* new/edit form */
+
+table td {
+	padding-right:20px;
+	padding-bottom:1em;
+}
+
+input {
+	width:400px;
+}
+
+textarea {
+	width:400px;
+	height:200px;
 }

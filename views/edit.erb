@@ -1,40 +1,50 @@
 <form action="<%= url %>" method="post" name="edit" enctype="multipart/form-data">
-<div class="postzoom">
-	<h2 class="title"><input type="text" name="title" value="<%= post.title %>" /></h2>
-	<p class="meta"><input type="text" name="location" value="<%= post.location %>" /></p>
-	<p>
-		<select name="cat">
-		  <option value="banky">Banky</option>
-		  <option value="verejne-budovy">Veřejné budovy</option>
-		  <option value="kancelare-a-obchodni-prostory">Kanceláře a obchodní prostory</option>
-		  <option value="hotely-a-restaurace">Hotely a restaurace</option>
-		  <option value="rodinne-domy-a-byty">Rodinné domy a byty</option>
-		</select>
-	</p>
-	<p class="meta"><%= post.created_at %></p>
-	<div class="entry">
-		<textarea name="body"><%= post.body %></textarea>
-	</div>
 	
-	<div id="sortable">
-		<% post.pictures.each_with_index do |pic,index| %>
-			<p id="pic_<%= pic.id %>">
-				<img src="<%= pic.filename %>" />
-				<a href="/pictures/<%= pic.id %>" data-method="delete" rel="nofollow" data-confirm="Are you sure?">Delete</a>
-			</p>
-		<% end %>
-	</div><!-- #sortable -->
-	
-	<input type="file" name="image[]" multiple/>
-	<div class="edit"><input type="submit" value="Save" /></div>
-</div>
+	<table>
+		<tr><td>Název reference</td><td><input type="text" name="title" value="<%= post.title %>" /></td></tr>
+		<tr><td>Místo a rok</td><td><input type="text" name="location" value="<%= post.location %>" /></td></tr>
+		<tr><td>Firma</td>
+			<td>
+				<select name="company">
+				  <option value="interier" <%= "SELECTED" if post.company == 'interier' %>>Interier</option>
+				  <option value="styl" <%= "SELECTED" if post.company == 'styl' %>>Styl</option>
+				</select>
+			</td>
+		</tr>
+		<tr><td>Kategorie</td>
+			<td>
+				<select name="cat">
+				  <option value="banky" <%= "SELECTED" if post.category == 'banky' %>>Banky</option>
+				  <option value="verejne-budovy"<%= "SELECTED" if post.category == 'verejne-budovy' %>>Veřejné budovy</option>
+				  <option value="kancelare-a-obchodni-prostory" <%= "SELECTED" if post.category == 'kancelare-a-obchodni-prostory' %>>Kanceláře a obchodní prostory</option>
+				  <option value="hotely-a-restaurace" <%= "SELECTED" if post.category == 'hotely-a-restaurace' %>>Hotely a restaurace</option>
+				  <option value="rodinne-domy-a-byty" <%= "SELECTED" if post.category == 'rodinne-domy-a-byty' %>>Rodinné domy a byty</option>
+				</select>
+			</td>
+		</tr>
+		<tr><td>Popisek</td><td><textarea name="body"><%= post.body %></textarea></td></tr>
+		<tr><td>Stávající fotky<br />(tažením lze měnit pořadí)</td>
+			<td>
+				<div id="sortable">
+					<% post.pictures.each_with_index do |pic,index| %>
+						<p id="pic_<%= pic.id %>">
+							<img src="<%= pic.filename %>" />
+							<a href="/pictures/<%= pic.id %>" data-method="delete" rel="nofollow" data-confirm="Opravdu smazat?">Smazat</a>
+						</p>
+					<% end %>
+				</div><!-- #sortable -->
+			</td>
+		</tr>
+		<tr><td>Přiložit fotky</td><td><input type="file" name="image[]" multiple/></td></tr>
+		<tr><td></td><td><input type="submit" value="Uložit" /></td></tr>
+	</table>
 </form>
 
 <script type="text/javascript" charset="utf-8">
 	$(document).ready(function() {
 		$("#sortable").sortable({
 			stop: function(event,ui){
-				console.log($("#sortable").sortable("serialize"));
+				//console.log($("#sortable").sortable("serialize"));
 				$.ajax({
 				  url: "/reorder",
 					type: "POST",

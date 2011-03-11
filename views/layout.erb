@@ -1,30 +1,49 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-	<title><%= @title || Blog.title %></title>
-	<link href="/main.css" rel="stylesheet" type="text/css" />
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js"></script>
-	<script type="text/javascript" src="/rails.js"></script>
+
+<html>
+	<head>
+
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		
+		<link rel="stylesheet" href="/css/reset.css" type="text/css" media="screen" title="no title" charset="utf-8">
+		<link rel="stylesheet" href="/css/common.css" type="text/css" media="screen" title="no title" charset="utf-8">
+		<link rel="stylesheet" href="/css/custom2.css" type="text/css" media="screen" title="no title" charset="utf-8">
+		
+		<script type="text/javascript" src="http://fast.fonts.com/jsapi/eae1e4d2-2f77-41fd-a77b-a774ca843d87.js"></script>
+		
+		<% if admin? %>
+			<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>
+			<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/jquery-ui.min.js"></script>
+			<script type="text/javascript" src="/rails.js"></script>
+		<% end %>
+		
+		<!--[if lt IE 9]>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		
+	</head>
 	
-</head>
-<body>
-<div id="header">
-	<div id="logo2">
-		<h1><a href="/"><%= Blog.title %></a></h1>
-		<p>by <%= Blog.author %></p>
-	</div>
-</div>
-
-<div id="content">
-	<%= yield %>
-</div>
-
-<div id="footer">
-	<p id="legal">
-	Content by <%= Blog.author %> | 
-	Design adapted from <a href="http://www.freecsstemplates.org/preview/replenish">Replenish</a>
-</div>
-</body>
+	<body>
+			
+		<div id="wrapper">
+			
+			<div id="container">
+				
+				<div id="header">
+					
+					<a href="/"><img src="/images/logo_lachman.png" width="125" height="13" alt="Logo Lachman"></a>
+					
+				</div><!-- #header -->
+				
+				<div id="content">
+					
+					<%= yield %>
+					
+				</div><!-- #content -->
+				
+			</div><!-- #container -->
+			
+		</div><!-- #wrapper -->
+		
+	</body>
 </html>
