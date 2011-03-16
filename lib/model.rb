@@ -9,7 +9,7 @@ require 'active_support/inflector'
 class ImageUploader < CarrierWave::Uploader::Base
   include CarrierWave::RMagick
 
-  process :resize_to_fit => [620, 620]
+  process :resize_to_limit => [620, 620]
 
   def store_dir
     'uploads'
@@ -51,6 +51,11 @@ class Post < Sequel::Model
 		timestamp :created_at
   end unless table_exists?                      
 	
+
+  def before_save
+    self.slug = self.class.make_slug(title)
+    super
+  end
 
 	def url
 		# d = created_at

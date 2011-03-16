@@ -1,3 +1,4 @@
 *.log
 lachman.db
 public/uploads/*/*.*
+Gemfile.lock

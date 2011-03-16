@@ -4,12 +4,45 @@ require 'ruby-debug'
 
 $LOAD_PATH.unshift File.dirname(__FILE__) + '/vendor/sequel'
 require 'sequel'
+require 'sequel/extensions/pagination'
+
+# http://autonomousmachine.com/2009/2/17/using-will_paginate-with-datamapper-and-sinatra
+# will_paginate gem version 3.0.pre2 or newer already supports non rails usage
+require 'will_paginate'
+require 'will_paginate/finders/sequel'
+require 'will_paginate/view_helpers/base'
+require 'will_paginate/view_helpers/link_renderer'
+
+WillPaginate::ViewHelpers::LinkRenderer.class_eval do
+  protected
+  def url(page)
+    url = @template.request.fullpath
+    if page == 1
+      # strip out page param and trailing ? if it exists
+      url.gsub(/page=[0-9]+/, '').gsub(/\?$/, '')
+    else
+      if url =~ /page=[0-9]+/
+        url.gsub(/page=[0-9]+/, "page=#{page}")
+      else
+        url + "?page=#{page}"
+      end
+    end
+  end
+end
+
+WillPaginate::ViewHelpers.pagination_options =
+  WillPaginate::ViewHelpers.pagination_options.merge({
+  :previous_label => '&laquo; Předchozí',
+  :next_label     => 'Následující &raquo;',
+})
 
 require 'carrierwave'
 require 'carrierwave/orm/sequel'
 
 configure do
-	Sequel.connect(ENV['DATABASE_URL'] || 'sqlite://lachman.db')
+	s = Sequel.connect(ENV['DATABASE_URL'] || 'sqlite://lachman.db')
+	require 'logger'
+	s.loggers << Logger.new($stdout)
 
 	require 'ostruct'
 	Blog = OpenStruct.new(
@@ -20,6 +53,35 @@ configure do
 		:admin_cookie_key => 'cbis_admin',
 		:admin_cookie_value => '913ace5851d6d976',
 		:disqus_shortname => nil
+	)
+
+	BlogConfig = OpenStruct.new(
+	  :companies => [
+      'interier',
+      'styl'
+	  ],
+	  :reference_all_categories => 'vsechny',
+	  :reference_categories => [
+      'banky',
+      'verejne-budovy',
+      'kancelare-a-obchodni-prostory',
+      'hotely-a-restaurace',
+      'rodinne-domy-a-byty'
+	  ],
+	  :company_has_reference_categories => {
+	    'interier' => true,
+	  },
+	  :company_pages => {
+	    'interier' => [
+        'prodejna-nabytku',
+        'profil-spolecnosti',
+        'kontakty',
+	    ],
+	    'styl' => [
+        'profil-spolecnosti',
+        'kontakty',
+	    ],
+	  }
 	)
 end
 
@@ -34,6 +96,12 @@ $LOAD_PATH.unshift(File.dirname(__FILE__) + '/lib')
 require 'model'
 
 helpers do
+  include WillPaginate::ViewHelpers::Base
+
+	def reference_categories_enabled?
+		BlogConfig.company_has_reference_categories[params[:company]]
+	end
+
 	def admin?
 		request.cookies[Blog.admin_cookie_key] == Blog.admin_cookie_value
 	end
@@ -45,7 +113,6 @@ helpers do
   def linebreaks(text)
     text.gsub(/[*+]/,'&nbsp;').gsub(/\s/,'<br/>')
   end
-	
 end
 
 
@@ -117,8 +184,8 @@ end
 post '/posts' do
 	auth
 	#debugger
-	#post = Post.new :title => params[:title], :tags => params[:tags], :body => params[:body], :created_at => Time.now, :slug => Post.make_slug(params[:title])
-	post = Post.new :title => params[:title], :location => params[:location], :body => params[:body], :created_at => Time.now, :slug => Post.make_slug(params[:title])
+	#post = Post.new :title => params[:title], :tags => params[:tags], :body => params[:body], :created_at => Time.now)
+	post = Post.new :title => params[:title], :location => params[:location], :body => params[:body], :created_at => Time.now
 	post.save
 	params[:image].each do |img|
 	  post.add_picture(:filename => img)
@@ -168,6 +235,29 @@ delete '/pictures/:id' do
 end
 
 # LACHMAN:
+BlogConfig.companies.map { |c| %r{/(#{c})/(#{BlogConfig.company_pages[c].join("|")})} }.each do |path|
+  get path do |company, page|
+    erb "#{company}/#{page}".to_sym
+  end
+end
+
+get '/reference/generate' do
+  auth
+  if Post.empty?
+    1000.times do |n|
+      post = Post.new :title => "Reference #{n}",
+        :location => "Praha #{n}",
+        :body => "Tady bude popis.",
+        :created_at => Time.now,
+        :category => BlogConfig.reference_categories[rand(BlogConfig.reference_categories.size)],
+        :company => BlogConfig.companies[rand(BlogConfig.companies.size)]
+      post.save
+    end
+  end
+
+  redirect "/", 301
+end
+
 get '/reference/new' do
 	auth
 	erb :edit, :locals => { :post => Post.new, :url => '/reference' }
@@ -182,14 +272,21 @@ get '/:company/reference/' do
 end
 
 get '/:company/reference/:category' do
-  case params[:category]
-  when 'vsechny'
-	  posts = Post.reverse_order(:created_at).limit(10)
-	when 'banky', 'verejne-budovy', 'kancelare-a-obchodni-prostory', 'hotely-a-restaurace', 'rodinne-domy-a-byty'
-	  posts = Post.filter(:category => params[:category]).reverse_order(:created_at).limit(10)
+  page = [params[:page].to_i, 1].max
+  per_page = 10
+
+  unless BlogConfig.companies.include?(params[:company])
+    halt [404,"No such company"]
+  end
+
+  if params[:category] == BlogConfig.reference_all_categories
+    posts = Post.filter(:company => params[:company]).reverse_order(:created_at).paginate(page, per_page)
+  elsif BlogConfig.reference_categories.include?(params[:category])
+    posts = Post.filter(:company => params[:company]).filter(:category => params[:category]).reverse_order(:created_at).paginate(page, per_page)
   else
     halt [404,"No such category"]
   end
+
   erb :credentials_list, :locals => { :posts => posts }, :layout => false
 end
 
@@ -199,7 +296,6 @@ post '/reference' do # create new reference
 	                :location => params[:location], 
 	                :body => params[:body], 
 	                :created_at => Time.now, 
-	                :slug => Post.make_slug(params[:title]),
 	                :category => params[:cat],
 	                :company => params[:company] 
 	post.save
