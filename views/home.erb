@@ -28,6 +28,9 @@
 						//$("#leftbottom").stop().animate({left: -320},1000);
 						$("#righttop").stop().animate({left: 310},1000);
 						$("#rightbottom").stop().animate({left: 300},1000);
+						
+						$("#menu_interier").stop().animate({opacity:0},1000,'swing'); // fade out but don't remove from DOM
+						
 					}
 					
 					//darken($(".interier_darken"));
@@ -42,6 +45,9 @@
 						//$("#leftbottom").stop().animate({left: 0},1000);
 						$("#righttop").stop().animate({left: 630},1000);
 						$("#rightbottom").stop().animate({left: 620},1000);
+						
+						$("#menu_interier").stop().animate({opacity:1},1000); // fade in
+						
 					}
 					
 					//undarken($(".interier_darken"));
@@ -242,12 +248,13 @@
 						</ul>
 					</div><!-- #rb_col2 -->
 					
-				</div><!-- #rightbottom -->
+				</div><!-- #rightbottom -->                                 
+				
+				<div id="footer">LACHMAN INTERIER DESIGN, s.r.o., Plumlovská 44, 796 01 Prostějov, Czech Republic. | webdesign <a href="http://www.josefrichter.com">www.josefrichter.com</a> <a class="auth_link" href="/auth">Administrace</a></div>
 				
 			</div><!-- #container -->
 			
 		</div><!-- #wrapper -->
-		
-			<div><a class="ref_link" href="/auth">Administrace</a></div>
+			
 	</body>
 </html>

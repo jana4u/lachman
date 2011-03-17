@@ -146,3 +146,16 @@ textarea {
 	width:400px;
 	height:200px;
 }
+
+
+.pagination {
+	margin-bottom:20px;
+}
+
+.pagination .disabled {
+	visibility:hidden;
+}
+
+.pagination em {
+	color:#FF2825;
+}
