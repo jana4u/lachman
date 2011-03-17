@@ -33,6 +33,15 @@
 					
 					<a href="/"><img src="/images/logo_lachman.png" width="125" height="13" alt="Logo Lachman"></a>
 					
+					<% if params[:company] %>
+						<div id="menu_interier">
+							<a href="/<%= params[:company] %>/reference/vsechny">reference</a> /
+							<% if BlogConfig.company_pages[params[:company]].include?('prodejna-nabytku') %><a href="/<%= params[:company] %>/prodejna-nabytku">prodejna nábytku</a> /<% end %>
+							<% if BlogConfig.company_pages[params[:company]].include?('profil-spolecnosti') %><a href="/<%= params[:company] %>/profil-spolecnosti">profil společnosti</a> /<% end %>
+							<% if BlogConfig.company_pages[params[:company]].include?('kontakty') %><a href="/<%= params[:company] %>/kontakty">kontakty</a><% end %>
+						</div><!-- #menu_interier -->
+					<% end %>
+					
 				</div><!-- #header -->
 				
 				<div id="content">

@@ -236,8 +236,8 @@ end
 
 # LACHMAN:
 BlogConfig.companies.map { |c| %r{/(#{c})/(#{BlogConfig.company_pages[c].join("|")})} }.each do |path|
-  get path do |company, page|
-    erb "#{company}/#{page}".to_sym
+  get path do |params[:company], params[:page]|
+    erb "#{params[:company]}/#{params[:page]}".to_sym
   end
 end
 
